@@ -1,0 +1,9 @@
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Pi.exe.config
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Pi.exe
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Pi.pdb
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Akka.dll
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Newtonsoft.Json.dll
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Akka.xml
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Release\Newtonsoft.Json.xml
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\obj\Release\Pi.exe
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\obj\Release\Pi.pdb

@@ -1,0 +1,10 @@
+c:\users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Pi.exe.config
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Pi.exe
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Pi.pdb
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Akka.dll
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Newtonsoft.Json.dll
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Akka.xml
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\bin\Debug\Newtonsoft.Json.xml
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\obj\Debug\Pi.csprojResolveAssemblyReference.cache
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\obj\Debug\Pi.exe
+C:\Users\simonanderson\documents\visual studio 2015\Projects\Pi\Pi\obj\Debug\Pi.pdb
