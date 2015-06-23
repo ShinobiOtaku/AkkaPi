@@ -1,6 +1,7 @@
 ﻿using Akka.Actor;
 using Akka.Routing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Pi
@@ -12,42 +13,60 @@ namespace Pi
          var system = ActorSystem.Create("Pi");
          var main = system.ActorOf<Coordinator>();
 
-         main.Tell(new CalculationOptions { Iterations = 10000, Length = 10000, Workers = 4 });
+         main.Tell(new RunOptions { Length = 800000000, NumberOfWorkers = 8 });
          Console.ReadLine();
       }
    }
 
-   class CalculationOptions
+   class RunOptions
    {
-      public short Iterations { get; set; }
-      public short Length { get; set; }
-      public short Workers { get; set; }
+      public int Length { get; set; }
+      public short NumberOfWorkers { get; set; }
    }
 
-   class Range
+   class Job
    {
-      public int Min { get; set; }
-      public int Max { get; set; }
+      public int Start { get; set; }
+      public int Length { get; set; }
    }
 
    class Coordinator : ReceiveActor
    {
-      IActorRef acc;
-      IActorRef workers;
+      IActorRef _acc;
+      IActorRef _workers;
 
       public Coordinator()
       {
-         Receive<CalculationOptions>(options =>
+         Receive<RunOptions>(options =>
          {
-            acc = Context.ActorOf(
-               Props.Create(() => new Accumulator(options.Iterations)), "accumulator");
+            var jobs = YieldEquallySplitJobs(options.NumberOfWorkers, options.Length).ToList();
 
-            workers = Context.ActorOf(
-               Props.Create(() => new Worker(acc)).WithRouter(new RoundRobinPool(options.Workers)), "workers");
+            _acc = Context.ActorOf(
+               Props.Create(() => new Accumulator(jobs.Count)), "accumulator");
 
-            foreach (var x in Enumerable.Range(0, options.Iterations))
-               workers.Tell(new Range { Min = x * options.Length, Max = (x + 1) * options.Length });
+            _workers = Context.ActorOf(
+               Props.Create(() => new Worker(_acc)).WithRouter(new RoundRobinPool(options.NumberOfWorkers)), "workers");
+
+            foreach (var job in jobs)
+               _workers.Tell(job);
          });
+      }
+
+      IEnumerable<Job> YieldEquallySplitJobs(int numberOfWorkers, int length)
+      {
+         var batchSize = length / numberOfWorkers;
+
+         int i = 0;
+
+         while(i < numberOfWorkers - 1)
+         {
+            yield return new Job { Length = batchSize, Start = i * batchSize };
+            i++;
+         }
+
+         var next = (i * batchSize);
+         var leftOver = length - next;
+         yield return new Job { Start = next, Length = leftOver };
       }
    }
 
@@ -55,10 +74,10 @@ namespace Pi
    {
       public Worker(IActorRef accumulator)
       {
-         Receive<Range>(range =>
+         Receive<Job>(range =>
          {
             var result = Enumerable
-               .Range(range.Min, range.Max - range.Min)
+               .Range(range.Start, range.Length)
                .Sum(num => 4 * (Math.Pow(-1, num) / (2 * num + 1)));
 
             accumulator.Tell(result);
