@@ -49,11 +49,6 @@ namespace Pi
                workers.Tell(new Range { Min = x * options.Length, Max = (x + 1) * options.Length });
          });
       }
-
-      protected override SupervisorStrategy SupervisorStrategy()
-      {
-         return new AllForOneStrategy(e => Directive.Stop);
-      }
    }
 
    class Worker : ReceiveActor
@@ -76,7 +71,7 @@ namespace Pi
       int _count;
       int _iterations;
       double _pi;
-      private DateTime _startTime;
+      DateTime _startTime;
 
       public Accumulator(int iterations)
       {
