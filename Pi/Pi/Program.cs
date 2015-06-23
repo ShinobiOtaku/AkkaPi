@@ -24,12 +24,6 @@ namespace Pi
       public short NumberOfWorkers { get; set; }
    }
 
-   class Job
-   {
-      public int Start { get; set; }
-      public int Length { get; set; }
-   }
-
    class Coordinator : ReceiveActor
    {
       IActorRef _acc;
@@ -52,7 +46,7 @@ namespace Pi
          });
       }
 
-      IEnumerable<Job> YieldEquallySplitJobs(int numberOfWorkers, int length)
+      IEnumerable<Worker.Job> YieldEquallySplitJobs(int numberOfWorkers, int length)
       {
          var batchSize = length / numberOfWorkers;
 
@@ -60,18 +54,24 @@ namespace Pi
 
          while(i < numberOfWorkers - 1)
          {
-            yield return new Job { Length = batchSize, Start = i * batchSize };
+            yield return new Worker.Job { Start = i * batchSize, Length = batchSize };
             i++;
          }
 
          var next = (i * batchSize);
          var leftOver = length - next;
-         yield return new Job { Start = next, Length = leftOver };
+         yield return new Worker.Job { Start = next, Length = leftOver };
       }
    }
 
    class Worker : ReceiveActor
    {
+      public class Job
+      {
+         public int Start { get; set; }
+         public int Length { get; set; }
+      }
+
       public Worker(IActorRef accumulator)
       {
          Receive<Job>(range =>
@@ -87,21 +87,21 @@ namespace Pi
 
    class Accumulator : ReceiveActor
    {
-      int _count;
-      int _iterations;
+      int _receivedMessages;
+      int _expectedMessages;
       double _pi;
       DateTime _startTime;
 
       public Accumulator(int iterations)
       {
-         _iterations = iterations;
+         _expectedMessages = iterations;
 
          Receive<double>(result =>
          {
             _pi += result;
-            _count += 1;
+            _receivedMessages += 1;
 
-            if (_count == _iterations)
+            if (_receivedMessages == _expectedMessages)
                Self.Tell(PoisonPill.Instance);
          });
       }
