@@ -13,21 +13,18 @@ namespace Pi
          var system = ActorSystem.Create("Pi");
          var main = system.ActorOf<Coordinator>();
 
-         main.Tell(new RunOptions { Length = 800000000, NumberOfWorkers = 8 });
+         main.Tell(new Coordinator.RunOptions { Length = 99999999, NumberOfWorkers = 8 });
          Console.ReadLine();
       }
    }
 
-   class RunOptions
-   {
-      public int Length { get; set; }
-      public short NumberOfWorkers { get; set; }
-   }
-
    class Coordinator : ReceiveActor
    {
-      IActorRef _acc;
-      IActorRef _workers;
+      public class RunOptions
+      {
+         public int Length { get; set; }
+         public short NumberOfWorkers { get; set; }
+      }
 
       public Coordinator()
       {
@@ -35,18 +32,18 @@ namespace Pi
          {
             var jobs = YieldEquallySplitJobs(options.NumberOfWorkers, options.Length).ToList();
 
-            _acc = Context.ActorOf(
+            var acc = Context.ActorOf(
                Props.Create(() => new Accumulator(jobs.Count)), "accumulator");
 
-            _workers = Context.ActorOf(
-               Props.Create(() => new Worker(_acc)).WithRouter(new RoundRobinPool(options.NumberOfWorkers)), "workers");
+            var workers = Context.ActorOf(
+               Props.Create(() => new Worker(acc)).WithRouter(new RoundRobinPool(options.NumberOfWorkers)), "workers");
 
             foreach (var job in jobs)
-               _workers.Tell(job);
+               workers.Tell(job);
          });
       }
 
-      IEnumerable<Worker.Job> YieldEquallySplitJobs(int numberOfWorkers, int length)
+      static IEnumerable<Worker.Job> YieldEquallySplitJobs(int numberOfWorkers, int length)
       {
          var batchSize = length / numberOfWorkers;
 
@@ -92,9 +89,9 @@ namespace Pi
       double _pi;
       DateTime _startTime;
 
-      public Accumulator(int iterations)
+      public Accumulator(int expectedMessage)
       {
-         _expectedMessages = iterations;
+         _expectedMessages = expectedMessage;
 
          Receive<double>(result =>
          {
